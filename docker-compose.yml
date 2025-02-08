@@ -1,0 +1,29 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:15
+    container_name: schedule_db
+    restart: always
+    environment:
+      POSTGRES_DB: schedule
+      POSTGRES_USER: schedule_user
+      POSTGRES_PASSWORD: 2020
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build: .
+    container_name: schedule_backend
+    restart: always
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgres://schedule_user:2020@db:5432/schedule?sslmode=disable
+    ports:
+      - "8080:8080"
+
+volumes:
+  pgdata: {}
