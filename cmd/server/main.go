@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/nathanfabio/schedule-saas/config"
+	"github.com/nathanfabio/schedule-saas/internal/routes"
 )
 
 func main() {
@@ -16,6 +17,9 @@ func main() {
 
 	// Create router
 	r := chi.NewRouter()
+
+	// Auth routes
+	r.Route("/auth", routes.AuthRoutes)
 
 	// Server port
 	port := os.Getenv("PORT")
