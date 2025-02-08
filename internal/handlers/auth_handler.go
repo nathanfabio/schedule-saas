@@ -3,10 +3,10 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/nathanfabio/schedule-saas/config"
 	"github.com/nathanfabio/schedule-saas/internal/models"
 	"github.com/nathanfabio/schedule-saas/repositories"
 	"golang.org/x/crypto/bcrypt"
@@ -80,7 +80,7 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
+	tokenString, err := token.SignedString([]byte(config.GetJWTSecret()))
 	if err != nil {
 		http.Error(w, "Error to create token", http.StatusInternalServerError)
 		return
