@@ -6,8 +6,11 @@ import (
 	"log"
 	"os"
 
-	_ "github.com/lib/pq"
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/postgres"
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
 var DB *sql.DB
@@ -41,4 +44,29 @@ func ConnectDB() {
 	DB = db
 	fmt.Println("Connected to database")
 
+	// Migrate database
+	driver, err := postgres.WithInstance(DB, &postgres.Config{})
+	if err != nil {
+		log.Fatal("Error creating migrate driver:", err)
+	}
+
+	m, err := migrate.NewWithDatabaseInstance(
+		"file://migrations",
+		"postgres",
+		driver,
+	)
+	if err != nil {
+		log.Fatal("Error creating migrate instance:", err)
+	}
+
+	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
+		log.Fatal("Error running migrations:", err)
+	}
+
+	fmt.Println("Database migrated successfully")
+}
+
+//GetJWTSecret returns the JWT secret
+func GetJWTSecret() string {
+	return os.Getenv("JWT_SECRET")
 }
